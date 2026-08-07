@@ -30,6 +30,16 @@ def input_matrix(name):
 
     return matrix
 
+def is_valid_size(matrix, size):
+    if len(matrix) != size:
+        return False
+
+    for row in matrix:
+        if len(row) != size:
+            return False
+        
+    return True
+
 def load_data():
     with open("data.json", "r", encoding="utf-8") as file:
         return json.load(file)
@@ -48,11 +58,10 @@ def classify(cross_score, x_score):
 def normalize_label(label):
     if label == "+":
         return "Cross"
-
-    if label == "x":
+    elif label == "x":
         return "X"
-
-    return label
+    else:
+        return label
 
 def measure_performance(pattern, filter_data, repeat=10):
     total_time = 0
@@ -78,11 +87,18 @@ def run_json_mode():
 
     data = load_data()
 
+    print("\n=== 필터 로드 ===")
+
+    for filter_name in data["filters"]:
+        print(f"✓ {filter_name} 필터 로드 완료 (Cross, X)")
+
+    print("\n=== 패턴 분석 ===")
+
     for pattern_name, pattern_data in data["patterns"].items():
         print(f"\n--- {pattern_name} ---")
 
         parts = pattern_name.split("_")
-        size = parts[1]
+        size = int(parts[1])
 
         filter_key = f"size_{size}"
 
@@ -91,6 +107,20 @@ def run_json_mode():
 
         pattern = pattern_data["input"]
         expected = normalize_label(pattern_data["expected"])
+
+        if (
+            not is_valid_size(pattern, size)
+            or not is_valid_size(cross_filter, size)
+            or not is_valid_size(x_filter, size)
+        ):
+            print("FAIL")
+            print("원인: 필터와 패턴의 크기가 일치하지 않습니다.")
+
+            total_count += 1
+            fail_cases.append(
+                (pattern_name, "필터와 패턴의 크기 불일치")
+            )
+            continue
 
         cross_score = calculate_mac(pattern, cross_filter)
         x_score = calculate_mac(pattern, x_filter)
@@ -164,7 +194,33 @@ def run_json_mode():
             print(f"- {case_name}: {reason}")
 
 def run_user_mode():
-    pass
+    print("\n=== 사용자 입력 모드 ===")
+
+    filter_a = input_matrix("필터 A")
+    filter_b = input_matrix("필터 B")
+
+    print("\n필터가 입력되었습니다.")
+
+    pattern = input_matrix("패턴")
+
+    score_a = calculate_mac(pattern, filter_a)
+    score_b = calculate_mac(pattern, filter_b)
+
+    if abs(score_a - score_b) < 1e-9:
+        result = "판정 불가"
+    elif score_a > score_b:
+        result = "A"
+    else:
+        result = "B"
+
+    average_ms = measure_performance(pattern, filter_a)
+
+    print("\n=== MAC 판정 결과 ===")
+    print(f"A 점수: {score_a}")
+    print(f"B 점수: {score_b}")
+    print(f"연산 시간(평균/10회): {average_ms:.6f} ms")
+    print(f"판정: {result}")
+
 
 def main():
     print("=== Mini NPU Simulator ===")
