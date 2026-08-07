@@ -1,4 +1,5 @@
 import json
+import time
 
 def calculate_mac(pattern, filter_data):
     score = 0.0
@@ -53,6 +54,23 @@ def normalize_label(label):
 
     return label
 
+def measure_performance(pattern, filter_data, repeat=10):
+    total_time = 0
+
+    for _ in range(repeat):
+        start = time.perf_counter()
+
+        calculate_mac(pattern, filter_data)
+
+        end = time.perf_counter()
+
+        total_time += end - start
+
+    average_seconds = total_time / repeat
+    average_ms = average_seconds * 1000
+
+    return average_ms
+
 def main():
     total_count = 0
     pass_count = 0
@@ -95,7 +113,7 @@ def main():
             if result == "UNDECIDED":
                 reason = "동점(UNDECIDED) 처리 규칙에 따라 FAIL"
             else:
-                reason = f"판정 결과({result}와 expected({expected}) 불일치"
+                reason = f"판정 결과({result})와 expected({expected}) 불일치"
 
             fail_cases.append((pattern_name, reason))
 
@@ -110,6 +128,23 @@ def main():
         print("\n*실패 케이스*")
         for case_name, reason in fail_cases:
             print(f"- {case_name}: {reason}")
+
+    print("\n=== 성능 분석 ===")
+    print("크기\t평균 시간(ms)\t연산 횟수")
+
+    for size in [5, 13, 25]:
+        filter_key = f"size_{size}"
+
+        cross_filter = data["filters"][filter_key]["cross"]
+
+        pattern_key = f"size_{size}_1"
+        pattern = data["patterns"][pattern_key]["input"]
+
+        average_ms = measure_performance(pattern, cross_filter)
+
+        operation_count = size * size
+
+        print(f"{size}x{size}\t{average_ms:.6f}\t{operation_count}")
 
 if __name__ == "__main__":
     main()
