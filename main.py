@@ -91,7 +91,13 @@ def main():
             pass_count += 1
         else:
             print("FAIL")
-            fail_cases.append(pattern_name)
+
+            if result == "UNDECIDED":
+                reason = "동점(UNDECIDED) 처리 규칙에 따라 FAIL"
+            else:
+                reason = f"판정 결과({result}와 expected({expected}) 불일치"
+
+            fail_cases.append((pattern_name, reason))
 
     fail_count = total_count - pass_count
 
@@ -101,9 +107,9 @@ def main():
     print(f"실패: {fail_count}개")
 
     if fail_cases:
-        print("실패 케이스")
-        for c in fail_cases:
-            print(f"- {c}")
+        print("\n*실패 케이스*")
+        for case_name, reason in fail_cases:
+            print(f"- {case_name}: {reason}")
 
 if __name__ == "__main__":
     main()
