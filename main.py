@@ -120,6 +120,21 @@ def run_json_mode():
     print("\n=== 성능 분석 ===")
     print("크기\t평균 시간(ms)\t연산 횟수")
 
+    pattern_3 = [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 1, 0]
+    ]
+
+    filter_3 = [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 1, 0]
+    ]
+
+    average_ms = measure_performance(pattern_3, filter_3)
+    print(f"3x3\t{average_ms:.6f}\t9")
+
     for size in [5, 13, 25]:
         filter_key = f"size_{size}"
 
@@ -144,7 +159,7 @@ def run_json_mode():
     
     if fail_cases:
         print("\n*실패 케이스*")
-        
+
         for case_name, reason in fail_cases:
             print(f"- {case_name}: {reason}")
 
