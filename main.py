@@ -36,7 +36,7 @@ def load_data():
 def classify(cross_score, x_score):
     epsilon = 1e-9
 
-    if abs(cross_score - x_score < epsilon):
+    if abs(cross_score - x_score) < epsilon:
         return "UNDECIDED"
 
     if cross_score > x_score:
@@ -56,27 +56,34 @@ def normalize_label(label):
 def main():
     data = load_data()
 
-    cross_filter = data["filters"]["size_5"]["cross"]
-    x_filter = data["filters"]["size_5"]["x"]
+    for pattern_name, pattern_data in data["patterns"].items():
+        print(f"\n--- {pattern_name} ---")
 
-    pattern_data = data["patterns"]["size_5_1"]
-    pattern = pattern_data["input"]
-    expected = normalize_label(pattern_data["expected"])
+        parts = pattern_name.split("_")
+        size = parts[1]
 
-    cross_score = calculate_mac(pattern, cross_filter)
-    x_score = calculate_mac(pattern, x_filter)
+        filter_key = f"size_{size}"
 
-    result = classify(cross_score, x_score)
+        cross_filter = data["filters"][filter_key]["cross"]
+        x_filter = data["filters"][filter_key]["x"]
 
-    print(f"Cross 점수: {cross_score}")
-    print(f"X 점수: {x_score}")
-    print(f"판정: {result}")
-    print(f"expected: {expected}")
+        pattern = pattern_data["input"]
+        expected = normalize_label(pattern_data["expected"])
 
-    if result == expected:
-        print("PASS")
-    else:
-        print("FAIL")
+        cross_score = calculate_mac(pattern, cross_filter)
+        x_score = calculate_mac(pattern, x_filter)
+
+        result = classify(cross_score, x_score)
+
+        print(f"Cross 점수: {cross_score}")
+        print(f"X 점수: {x_score}")
+        print(f"판정: {result}")
+        print(f"expected: {expected}")
+
+        if result == expected:
+            print("PASS")
+        else:
+            print("FAIL")
 
 if __name__ == "__main__":
     main()
