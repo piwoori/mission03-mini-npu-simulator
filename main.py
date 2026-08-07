@@ -54,6 +54,10 @@ def normalize_label(label):
     return label
 
 def main():
+    total_count = 0
+    pass_count = 0
+    fail_cases = []
+
     data = load_data()
 
     for pattern_name, pattern_data in data["patterns"].items():
@@ -80,10 +84,26 @@ def main():
         print(f"판정: {result}")
         print(f"expected: {expected}")
 
+        total_count += 1
+
         if result == expected:
             print("PASS")
+            pass_count += 1
         else:
             print("FAIL")
+            fail_cases.append(pattern_name)
+
+    fail_count = total_count - pass_count
+
+    print("\n=== 결과 요약 ===")
+    print(f"총 테스트: {total_count}개")
+    print(f"통과: {pass_count}개")
+    print(f"실패: {fail_count}개")
+
+    if fail_cases:
+        print("실패 케이스")
+        for c in fail_cases:
+            print(f"- {c}")
 
 if __name__ == "__main__":
     main()
