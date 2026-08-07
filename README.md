@@ -229,7 +229,6 @@ abs(cross_score - x_score) < 1e-9
 - 평균 연산 시간
 - 최종 판정
 
----
 
 ### data.json 분석 모드
 
