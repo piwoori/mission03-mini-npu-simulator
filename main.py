@@ -71,7 +71,7 @@ def measure_performance(pattern, filter_data, repeat=10):
 
     return average_ms
 
-def main():
+def run_json_mode():
     total_count = 0
     pass_count = 0
     fail_cases = []
@@ -117,18 +117,6 @@ def main():
 
             fail_cases.append((pattern_name, reason))
 
-    fail_count = total_count - pass_count
-
-    print("\n=== 결과 요약 ===")
-    print(f"총 테스트: {total_count}개")
-    print(f"통과: {pass_count}개")
-    print(f"실패: {fail_count}개")
-
-    if fail_cases:
-        print("\n*실패 케이스*")
-        for case_name, reason in fail_cases:
-            print(f"- {case_name}: {reason}")
-
     print("\n=== 성능 분석 ===")
     print("크기\t평균 시간(ms)\t연산 횟수")
 
@@ -145,6 +133,38 @@ def main():
         operation_count = size * size
 
         print(f"{size}x{size}\t{average_ms:.6f}\t{operation_count}")
+
+
+    fail_count = total_count - pass_count
+    
+    print("\n=== 결과 요약 ===")
+    print(f"총 테스트: {total_count}개")
+    print(f"통과: {pass_count}개")
+    print(f"실패: {fail_count}개")
+    
+    if fail_cases:
+        print("\n*실패 케이스*")
+        
+        for case_name, reason in fail_cases:
+            print(f"- {case_name}: {reason}")
+
+def run_user_mode():
+    pass
+
+def main():
+    print("=== Mini NPU Simulator ===")
+    print("[모드 선택]")
+    print("1. 사용자 입력 (3x3)")
+    print("2. data.json 분석")
+
+    choice = input("선택: ")
+
+    if choice == "1":
+        run_user_mode()
+    elif choice == "2":
+        run_json_mode()
+    else:
+        print("잘못된 입력입니다.")
 
 if __name__ == "__main__":
     main()
