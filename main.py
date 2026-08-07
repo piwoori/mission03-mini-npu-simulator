@@ -61,12 +61,10 @@ def main():
 
     pattern_data = data["patterns"]["size_5_1"]
     pattern = pattern_data["input"]
-    expected = pattern_data["expected"]
+    expected = normalize_label(pattern_data["expected"])
 
     cross_score = calculate_mac(pattern, cross_filter)
     x_score = calculate_mac(pattern, x_filter)
-
-    excepted =normalize_label(pattern_data["expected"])
 
     result = classify(cross_score, x_score)
 
@@ -75,7 +73,7 @@ def main():
     print(f"판정: {result}")
     print(f"expected: {expected}")
 
-    if result == excepted:
+    if result == expected:
         print("PASS")
     else:
         print("FAIL")
