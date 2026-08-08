@@ -206,7 +206,7 @@ def run_user_mode():
     score_a = calculate_mac(pattern, filter_a)
     score_b = calculate_mac(pattern, filter_b)
 
-    if abs(score_a - score_b) < 1e-9:
+    if score_a == score_b:
         result = "판정 불가"
     elif score_a > score_b:
         result = "A"
